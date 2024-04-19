@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "/Proto";
+
+package main;
+
+service ServicioRecursos {
+  rpc PedirRecursos(ResourceRequest) returns (ResourceResponse) {}
+}
+
+message ResourceRequest {
+  int32 ID = 1;
+  int32 AT = 2;
+  int32 MP = 3;
+}
+
+message ResourceResponse {
+  string message = 1;
+}
