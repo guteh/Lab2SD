@@ -7,7 +7,10 @@ import (
 	"sync"
 	"time"
 
+	pb "Lab2SD/Proto"
+
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -21,6 +24,7 @@ func main() {
 	for i := 0; i < 4; i++ {
 		wg.Add(1)
 		go solicitarM(results, &wg)
+		fmt.Printf("Team %d has been launched\n", i+1)
 	}
 
 	// Wait for all goroutines to finish
@@ -42,26 +46,26 @@ func solicitarM(results chan<- string, wg *sync.WaitGroup) {
 	// Generate random quantities of AT and MP
 	RandAT := rand.Intn(11) + 20
 	RandMP := rand.Intn(6) + 10
-	results <- fmt.Sprintf("Team selected %d AT and %d MP", AT, MP)
+	results <- fmt.Sprintf("Team selected %d AT and %d MP", RandAT, RandMP)
 
 	serverAddr := "0.0.0.0:8080"
 
-	conn, err := grpc.Dial(serverAddr, grpc.WithInsecure)
+	conn, err := grpc.Dial(serverAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		fmt.Println("Error al conectar al servidor central:", err)
 		return
 	}
 	defer conn.Close()
 
-	c := NewResourceServiceClient(conn)
+	c := pb.NewServicioRecursosClient(conn)
 	// Send the result to the results channel
 
 	for {
-		response, err := c.RequestResources(context.Background(), &PedirRecursos{ID: 1, AT: RandAT, MP: RandMP})
+		response, err := c.PedirRecursos(context.Background(), &pb.ResourceRequest{ID: 1, AT: int32(RandAT), MP: int32(RandMP)})
 		if err != nil {
 			fmt.Println("Error al enviar el mensaje al servidor central:", err)
 		}
-		if response.Status == 1 {
+		if response.Message == 1 {
 			fmt.Println("Recursos obtenidos exitosamente")
 			break
 		} else {

@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-option go_package = "/Proto";
+package Proto;
 
-package main;
+option go_package = "./Proto";
 
 service ServicioRecursos {
   rpc PedirRecursos(ResourceRequest) returns (ResourceResponse) {}
@@ -15,5 +15,5 @@ message ResourceRequest {
 }
 
 message ResourceResponse {
-  string message = 1;
+  int32 message = 1;
 }
