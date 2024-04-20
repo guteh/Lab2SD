@@ -17,36 +17,29 @@ func main() {
 	// Create a wait group to synchronize the goroutines
 	var wg sync.WaitGroup
 
-	// Create a channel to receive the results
-	results := make(chan string)
+
 
 	// Launch four goroutines, each representing a team
-	for i := 0; i < 4; i++ {
+	for i := 0; i < 2; i++ {
 		wg.Add(1)
-		go solicitarM(results, &wg)
+		go solicitarM(i + 1, &wg)
 		fmt.Printf("Team %d has been launched\n", i+1)
 	}
 
 	// Wait for all goroutines to finish
 	wg.Wait()
 
-	// Close the results channel
-	close(results)
-
-	// Print the results
-	for result := range results {
-		fmt.Println(result)
-	}
 }
 
-func solicitarM(results chan<- string, wg *sync.WaitGroup) {
+func solicitarM(id int,wg *sync.WaitGroup) {
 	// Decrement the wait group counter when the function finishes
+
 	defer wg.Done()
+	time.Sleep(10 * time.Second)
 
 	// Generate random quantities of AT and MP
 	RandAT := rand.Intn(11) + 20
 	RandMP := rand.Intn(6) + 10
-	results <- fmt.Sprintf("Team selected %d AT and %d MP", RandAT, RandMP)
 
 	serverAddr := "0.0.0.0:8080"
 
@@ -61,12 +54,13 @@ func solicitarM(results chan<- string, wg *sync.WaitGroup) {
 	// Send the result to the results channel
 
 	for {
-		response, err := c.PedirRecursos(context.Background(), &pb.ResourceRequest{ID: 1, AT: int32(RandAT), MP: int32(RandMP)})
+		response, err := c.PedirRecursos(context.Background(), &pb.ResourceRequest{ID: int32(id), AT: int32(RandAT), MP: int32(RandMP)})
 		if err != nil {
 			fmt.Println("Error al enviar el mensaje al servidor central:", err)
 		}
 		if response.Message == 1 {
 			fmt.Println("Recursos obtenidos exitosamente")
+			wg.Done()
 			break
 		} else {
 			fmt.Println("No hay recursos suficientes, esperando 3 segundos para volver a intentar")
