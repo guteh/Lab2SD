@@ -2,9 +2,9 @@ FROM golang:latest
 
 WORKDIR /app
 
-COPY ./central /app
+COPY . .
 
-RUN go build -o central central.go
+RUN go build -o central central/central.go
 
 EXPOSE 8080
 
