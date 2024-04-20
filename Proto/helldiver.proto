@@ -2,18 +2,18 @@ syntax = "proto3";
 
 package Proto;
 
-option go_package = "./Proto";
+option go_package = "./Proto";  //Se define la carpeta donde se guardará el archivo generado
 
 service ServicioRecursos {
-  rpc PedirRecursos(ResourceRequest) returns (ResourceResponse) {}
+  rpc SolicitarM(ResourceRequest) returns (ResourceResponse) {}  //Se define el método SolicitarM con los mensajes ResourceRequest y ResourceResponse
 }
 
-message ResourceRequest {
+message ResourceRequest {  //Se asignan valores a los recursos a pedir
   int32 ID = 1;
   int32 AT = 2;
   int32 MP = 3;
 }
 
-message ResourceResponse {
+message ResourceResponse { //Retorno 1 o 0 de parte de servidor central
   int32 message = 1;
 }

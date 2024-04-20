@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ServicioRecursosClient interface {
-	PedirRecursos(ctx context.Context, in *ResourceRequest, opts ...grpc.CallOption) (*ResourceResponse, error)
+	SolicitarM(ctx context.Context, in *ResourceRequest, opts ...grpc.CallOption) (*ResourceResponse, error)
 }
 
 type servicioRecursosClient struct {
@@ -33,9 +33,9 @@ func NewServicioRecursosClient(cc grpc.ClientConnInterface) ServicioRecursosClie
 	return &servicioRecursosClient{cc}
 }
 
-func (c *servicioRecursosClient) PedirRecursos(ctx context.Context, in *ResourceRequest, opts ...grpc.CallOption) (*ResourceResponse, error) {
+func (c *servicioRecursosClient) SolicitarM(ctx context.Context, in *ResourceRequest, opts ...grpc.CallOption) (*ResourceResponse, error) {
 	out := new(ResourceResponse)
-	err := c.cc.Invoke(ctx, "/Proto.ServicioRecursos/PedirRecursos", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Proto.ServicioRecursos/SolicitarM", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (c *servicioRecursosClient) PedirRecursos(ctx context.Context, in *Resource
 // All implementations must embed UnimplementedServicioRecursosServer
 // for forward compatibility
 type ServicioRecursosServer interface {
-	PedirRecursos(context.Context, *ResourceRequest) (*ResourceResponse, error)
+	SolicitarM(context.Context, *ResourceRequest) (*ResourceResponse, error)
 	mustEmbedUnimplementedServicioRecursosServer()
 }
 
@@ -54,8 +54,8 @@ type ServicioRecursosServer interface {
 type UnimplementedServicioRecursosServer struct {
 }
 
-func (UnimplementedServicioRecursosServer) PedirRecursos(context.Context, *ResourceRequest) (*ResourceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PedirRecursos not implemented")
+func (UnimplementedServicioRecursosServer) SolicitarM(context.Context, *ResourceRequest) (*ResourceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SolicitarM not implemented")
 }
 func (UnimplementedServicioRecursosServer) mustEmbedUnimplementedServicioRecursosServer() {}
 
@@ -70,20 +70,20 @@ func RegisterServicioRecursosServer(s grpc.ServiceRegistrar, srv ServicioRecurso
 	s.RegisterService(&ServicioRecursos_ServiceDesc, srv)
 }
 
-func _ServicioRecursos_PedirRecursos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ServicioRecursos_SolicitarM_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ResourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ServicioRecursosServer).PedirRecursos(ctx, in)
+		return srv.(ServicioRecursosServer).SolicitarM(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Proto.ServicioRecursos/PedirRecursos",
+		FullMethod: "/Proto.ServicioRecursos/SolicitarM",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServicioRecursosServer).PedirRecursos(ctx, req.(*ResourceRequest))
+		return srv.(ServicioRecursosServer).SolicitarM(ctx, req.(*ResourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -96,8 +96,8 @@ var ServicioRecursos_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ServicioRecursosServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "PedirRecursos",
-			Handler:    _ServicioRecursos_PedirRecursos_Handler,
+			MethodName: "SolicitarM",
+			Handler:    _ServicioRecursos_SolicitarM_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

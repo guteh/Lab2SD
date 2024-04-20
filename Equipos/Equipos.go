@@ -14,57 +14,54 @@ import (
 )
 
 func main() {
-	// Create a wait group to synchronize the goroutines
 	var wg sync.WaitGroup
 
 
 
-	// Launch four goroutines, each representing a team
-	for i := 0; i < 2; i++ {
+	// Se crean los cuatro grupos
+	for i := 0; i < 4; i++ {
 		wg.Add(1)
-		go solicitarM(i + 1, &wg)
-		fmt.Printf("Team %d has been launched\n", i+1)
+		go InicioEquipo(i + 1, &wg)  //Empieza ejecucion de equipo
+		time.Sleep(2 * time.Second)  //Espero 2 segundos para no colapsar
+		fmt.Printf("Equipo %d ha empezado su mision!\n", i+1)
 	}
 
-	// Wait for all goroutines to finish
+	// Espera que todas las ejecuciones terminen para finalizar la ejecucion del codigo.
 	wg.Wait()
 
 }
 
-func solicitarM(id int,wg *sync.WaitGroup) {
-	// Decrement the wait group counter when the function finishes
+func InicioEquipo(id int,wg *sync.WaitGroup) { //Toma como parametros el id del equipo y el grupo de espera
 
 	defer wg.Done()
-	time.Sleep(10 * time.Second)
+	time.Sleep(10 * time.Second)  //Espera 10 segundos por enunciado
 
-	// Generate random quantities of AT and MP
+	// Genera cantidades random de recursos
 	RandAT := rand.Intn(11) + 20
 	RandMP := rand.Intn(6) + 10
 
 	serverAddr := "0.0.0.0:8080"
 
-	conn, err := grpc.Dial(serverAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(serverAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))  //Se conecta al servidor central
 	if err != nil {
 		fmt.Println("Error al conectar al servidor central:", err)
 		return
 	}
 	defer conn.Close()
 
-	c := pb.NewServicioRecursosClient(conn)
-	// Send the result to the results channel
+	c := pb.NewServicioRecursosClient(conn) 
 
 	for {
-		response, err := c.PedirRecursos(context.Background(), &pb.ResourceRequest{ID: int32(id), AT: int32(RandAT), MP: int32(RandMP)})
+		response, err := c.SolicitarM(context.Background(), &pb.ResourceRequest{ID: int32(id), AT: int32(RandAT), MP: int32(RandMP)})  //Envia peticion de recursos a servidor central
 		if err != nil {
 			fmt.Println("Error al enviar el mensaje al servidor central:", err)
 		}
 		if response.Message == 1 {
-			fmt.Println("Recursos obtenidos exitosamente")
-			wg.Done()
-			break
+			fmt.Printf("EQUIPO %d: Solicitando %d AT y %d MP -- APROBADA -- ;\n Conquista existosa! Cerrando comunicacion.\n",id, RandAT, RandMP)
+			break  //Si la respuesta es 1, se cierra la comunicacion
 		} else {
-			fmt.Println("No hay recursos suficientes, esperando 3 segundos para volver a intentar")
-			time.Sleep(3 * time.Second)
+			fmt.Printf("EQUIPO %d: Solicitando %d AT y %d MP -- DENEGADA -- ;\n Reintentando en 3 segundos...\n",id, RandAT, RandMP)
+			time.Sleep(3 * time.Second)  //Si la respuesta es 0, se espera 3 segundos y se vuelve a enviar la peticion
 		}
 	}
 }
