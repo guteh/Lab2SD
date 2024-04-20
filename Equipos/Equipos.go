@@ -22,7 +22,7 @@ func main() {
 	for i := 0; i < 4; i++ {  // Se crean 4 grupos, si se quiere modificar se debe cambiar el 4 por otro numero y el archivo Central.go linea 53
 		wg.Add(1)
 		go InicioEquipo(i + 1, &wg)  //Empieza ejecucion de equipo
-		time.Sleep(2 * time.Second)  //Espero 2 segundos para no colapsar
+		time.Sleep(4 * time.Second)  //Espero 2 segundos para no colapsar
 		fmt.Printf("Equipo %d ha empezado su mision!\n", i+1)
 	}
 
