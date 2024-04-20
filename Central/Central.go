@@ -34,13 +34,14 @@ func generarRecursos(recursos map[string]int) {  //Genera recursos cada 5 segund
 type server struct {  //Crea el servidor rcp
     pb.UnimplementedServicioRecursosServer
     recursos map[string]int
+	contador int
+	grpcServer *grpc.Server
 }
 
 //Implementa la funcion SolicitarM de la interfaz ServicioRecursos de RCP
 
 func (s *server) SolicitarM(ctx context.Context, req *pb.ResourceRequest) (*pb.ResourceResponse, error) {
 
-	
     if s.recursos["AT"] >= int(req.GetAT()) && s.recursos["MP"] >= int(req.GetMP()) {  //Si los recursos son suficientes
 
         s.recursos["AT"] -= int(req.GetAT())  //Se restan los recursos asignados
@@ -48,6 +49,13 @@ func (s *server) SolicitarM(ctx context.Context, req *pb.ResourceRequest) (*pb.R
 
 		fmt.Printf("Recepcion de solicitud desde equipo %d, %d AT y %d MP -- APROBADA --\nAT EN SISTEMA: %d ; MP EN SISTEMA: %d \n", req.GetID(), req.GetAT(), req.GetMP(), s.recursos["AT"], s.recursos["MP"])
 		fmt.Println("\n")
+		s.contador++
+		if s.contador == 4 {  //Si ya pasaron 4 exitos, se cierra el servidor, si se quiere cambiar la cant de equipos se debe modificar este valor!!
+			go func ()  {
+				time.Sleep(2 * time.Second)
+				s.grpcServer.Stop()
+			}()
+		}
         return &pb.ResourceResponse{Message: 1}, nil //Se retorna en funcion SolicitarM un mensaje de aprobacion
     } else {
         // No hay suficientes recursos
@@ -62,7 +70,6 @@ func (s *server) SolicitarM(ctx context.Context, req *pb.ResourceRequest) (*pb.R
 
 func main() {
 	recursos := make(map[string]int) //Se inicializan recursos
-
 	recursos["AT"] = 0
 	recursos["MP"] = 0
 
@@ -73,20 +80,22 @@ func main() {
 
 	s := &server{
         recursos: recursos, //Se le asignan los recursos al servidor
+		contador: 0,
+		grpcServer: grpcServer,
     }
 
 	pb.RegisterServicioRecursosServer(grpcServer, s) //Se registra el servidor
-
+	
 	addr := "0.0.0.0:8080"  //Se asigna la direccion del servidor
 	lis, err := net.Listen("tcp", addr) //Se crea el listener
     if err != nil {
-        log.Fatalf("Fallo al escuchar %v", err)
+		log.Fatalf("Fallo al escuchar %v", err)
     }
-
+	
 	if err := grpcServer.Serve(lis); err != nil {  //Se inicia el servidor
         log.Fatalf("Fallo al crear servidor: %s", err)
     }
-
-
+	
+	fmt.Printf("Servidor Central termina ejecucion\n")
 
 }
