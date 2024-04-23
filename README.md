@@ -1,9 +1,16 @@
 # Lab2SD
-Benjamin Gutierrez 202004621-
+Benjamín Gutierrez 202004621-2
 Sofía Parada Hormazábal 202004671-9
 
 
-Para ejecutar Central, abrir terminal en Lab2SD y escribir go run Central/Central.go
 
-Para ejecutar Equipos, abrir terminal en Lab2SD y escribir go run Equipos/Equipos.go
-Equipos no funciona, lo ideal seria hacer un codigo parecido a la tarea pasada con los waitgroup
+Instrucciones de ejecucuión:
+
+Para ejecutar ambos codigos, se necesitan dos terminales powershell (en windows o vsc) que se encuentren en la carpeta donde se encuentran los archivos
+
+-Para dockerizar Central se debe escribir en terminal: docker build -t tierra .
+-Para correr el docker se debe escribir en terminal: docker run -p 8080:8080 tierra
+
+Una vez el Central ejecutandose, se debe correr el Equipos.go, para esto se debe escribir en otra terminal: go run Equipos/Equipos.go
+
+Si se desea cancelar la ejecucion antes, para Equipos.go se utiliza CTRL + C y para Central.go, se debe eliminar la ejecucuón desde la aplicación Dockert Desktop
