@@ -6,7 +6,8 @@ Sofía Parada Hormazábal 202004671-9
 
 Instrucciones de ejecucuión:
 
-Para ejecutar ambos codigos, se necesitan dos terminales powershell (en windows o vsc) que se encuentren en la carpeta donde se encuentran los archivos
+Para ejecutar ambos codigos, se necesitan dos terminales powershell (en windows o vsc) que se encuentren en el directorion principal donde se encuentran las carpetas con sus respectivos archivos go
+y el dockerfile.
 
 -Para dockerizar Central se debe escribir en terminal: docker build -t tierra .
 -Para correr el docker se debe escribir en terminal: docker run -p 8080:8080 tierra
